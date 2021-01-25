@@ -5,99 +5,38 @@ const { response } = require('../../app');
 
 const Product = require('../models/product')
 
-router.get('/', (req, res, next) => {
-    Product.find()
-        .exec()
-        .then(docs => {
-            console.log(docs);
-            res.status(200).json(docs)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            })
-        })
+router.get('/', async (req, res, next) => {
+    const getProducts = await Product.find()
+    res.status(200).json(getProducts)
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
     const product = new Product({
         _id: new mongoose.Types.ObjectId,
         name: req.body.name,
         price: req.body.price
     })
-    product
-        .save()
-        .then(result => {
-            console.log(result);
-            res.status(201).json({
-                message: 'Handling POST requests to /products',
-                createdProduct: result
-            });
-        })
-        .catch(err => {
-            console.log(err)
-            res.status(500).json({
-                error: err
-            })
-        });
+    productPosted = await product.save()
+    res.status(200).json(productPosted)
 
 });
 
-router.get('/:productId', (req, res, next) => {
+router.get('/:productId', async (req, res, next) => {
     const id = req.params.productId;
-    Product.findById(id)
-        .exec()
-        .then(doc => {
-            console.log("From databse", doc);
-            if (doc) {
-                res.status(200).json(doc)
-            } else {
-                res.status(404).json({ message: "No valid entry found for provided ID" })
-            }
-
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err })
-        })
+    product = await Product.findById(id)
+    res.status(200).json(product)
 })
 
-router.patch('/:productId', (req, res, next) => {
+router.patch('/:productId', async (req, res, next) => {
     const id = req.params.productId;
-    const updateOps = {};
-    for (const ops of req.body) {
-        updateOps[ops.propName] = ops.value;
-    }
-    Product.update({ _id: id }, { $set: updateOps })
-        .exec()
-        .then(result => {
-            console.log(result);
-            res.status(200).json({
-                result
-            })
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            })
-        })
+    const product = await Product.findOneAndUpdate({ _id: id }, { $set: req.body })
+    res.status(201).json(product)
 })
 
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', async (req, res, next) => {
     const id = req.params.productId;
-    Product.remove({ _id: id })
-        .exec()
-        .then(result => {
-            res.status(200).json(result);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            })
-        });
+    const product = await Product.deleteOne({ _id: id })
+    res.status(201).json(product)
 })
 
 module.exports = router; 

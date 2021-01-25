@@ -9,7 +9,8 @@ const productRoutes = require('./api/routes/products')
 
 mongoose.connect('mongodb+srv://almir:' + process.env.MONGO_ATLAS_PW + '@cluster0.ekxmb.mongodb.net/Project0?retryWrites=true&w=majority', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
 })
 
 app.use(morgan('dev'))
